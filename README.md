@@ -20,7 +20,7 @@ This is release candidate code, tested against Hazelcast 3.7+ releases.
 
 ## <a id="requirements"></a>Requirements
 
-* Java 6+
+* Java 7+
 * [Hazelcast 3.6+](https://hazelcast.org/)
 
 ## <a id="building"></a>Building from source
