@@ -61,3 +61,13 @@ java                    8u92-jre-alpine     bd8e525f9770        2 weeks ago     
 ```
 COPY build/libs/hazelcast-docker-test-1.0-RC1.jar /hzdocker/hazelcast-docker-test.jar
 ```
+
+If you have issue with docker host when running the docker image build on Mac, please refer to this github issue:
+[docker for mac 1.12 cannot connect](https://github.com/bmuschko/gradle-docker-plugin/issues/235)
+
+Specifically, the comment by bitsofinfo solved the problem for me for Mac
+
+```
+brew install socat
+nohup socat -4 TCP-LISTEN:2375,fork UNIX-CONNECT:/var/run/docker.sock &
+```
