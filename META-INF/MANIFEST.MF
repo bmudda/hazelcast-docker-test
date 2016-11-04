@@ -1,0 +1,1 @@
+Main-Class: com.bmudda.hazelcast.docker.test.HazelcastRunner

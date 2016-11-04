@@ -1,0 +1,101 @@
+import com.bmuschko.gradle.docker.tasks.image.*
+import com.bmuschko.gradle.docker.DockerRegistryCredentials
+
+buildscript {
+	repositories {
+    	jcenter()
+    }
+    dependencies {
+        classpath("com.bmuschko:gradle-docker-plugin:3.0.1")
+    }
+
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '2.14'
+}
+
+group = 'com.bmudda'
+
+allprojects {
+	repositories {
+		jcenter()
+	}
+	apply plugin: 'maven'
+	apply plugin: 'java'
+	apply plugin: 'com.bmuschko.docker-remote-api'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    compile group: 'com.hazelcast', name: 'hazelcast', version:'3.7.2'
+    //compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.7'
+  	//compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.7'
+  	
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+	manifest {
+        attributes 'Implementation-Title': 'Hazelcast Docker Test',
+        	'Implementation-Version': 1.0,
+        	'Main-Class': 'com.bmudda.hazelcast.docker.test.HazelcastRunner'
+    }
+    baseName = project.name + '-all'
+    from {
+    	configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+  	}
+    with jar
+}
+
+task buildDockerImage(type: DockerBuildImage) {
+  
+  dependsOn build
+  inputDir = project.projectDir
+  dockerFile = project.file('Dockerfile')
+  if (project.hasProperty("imageTag")) {
+    tag = project.name+":"+project.imageTag
+  } else {
+    tag = project.name+":"+project.version
+  }
+
+}
+
+task buildTagDockerImage(type: DockerTagImage) {
+    dependsOn buildDockerImage
+    targetImageId { buildDockerImage.getImageId() }
+
+    repository = project.name
+    
+    if (project.hasProperty("imageTag")) {
+      tag = project.imageTag
+    }
+
+}
+
+sourceSets {
+    main.java.srcDir "src/main/java"
+}
+
+jar {
+  manifest { 
+    attributes (
+      "Main-Class": "com.bmudda.hazelcast.docker.test.HazelcastRunner"
+      )
+  }  
+
+  from {
+    configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+  }
+}
+
+artifacts {
+    archives sourcesJar
+}

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hazelcast id="hazelcast-consul-discovery" xmlns="http://www.hazelcast.com/schema/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-3.7.xsd">
+  <group>
+    <name>hazelcast-docker-test</name>
+    <password>haz3lcast1</password>
+  </group>
+  <properties>
+    <property name="hazelcast.discovery.enabled">false</property>
+    <property name="hazelcast.shutdownhook.enabled">false</property>
+    <property name="hazelcast.socket.server.bind.any">false</property>
+    <property name="hazelcast.logging.type">jdk</property> 
+  </properties>
+  <network>
+    <port auto-increment="true">5701</port>
+    <join>
+      <multicast enabled="false"/>
+      <aws enabled="false"/>
+      <tcp-ip enabled="true">
+        <member>127.0.0.1:40001</member>
+        <member>127.0.0.1:40002</member>
+      </tcp-ip>
+    </join>
+  </network>
+</hazelcast>
